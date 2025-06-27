@@ -36,6 +36,13 @@ public class TicTacToeApplication {
             game.getBoard().printBoard();
         }
 
+        if(game.getGameStatus() == GameStatus.FINISHED) {
+            System.out.println("Game won by player: " + game.getWinner().getGameSymbol());
+        }
+        if(game.getGameStatus() == GameStatus.DRAWN) {
+            System.out.println("Game is Drawn.");
+        }
+
 
 
 

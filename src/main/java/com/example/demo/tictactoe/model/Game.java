@@ -1,7 +1,10 @@
 package com.example.demo.tictactoe.model;
 
 import com.example.demo.tictactoe.exception.InvalidMoveException;
-import com.example.demo.tictactoe.strategy.WinningStrategy;
+import com.example.demo.tictactoe.strategy.winning.ColWinningStrategy;
+import com.example.demo.tictactoe.strategy.winning.DiagonalWinnigStrategy;
+import com.example.demo.tictactoe.strategy.winning.RowWinningStrategy;
+import com.example.demo.tictactoe.strategy.winning.WinningStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import java.util.ArrayList;
@@ -17,12 +20,13 @@ public class Game {
     private static int currPlayerIndex=0;
     private Board board;
     private List<Player> players=new ArrayList<>();
-    private WinningStrategy winningStrategy;
+    private List<WinningStrategy> winningStrategy=List.of(new RowWinningStrategy(),new ColWinningStrategy(),new DiagonalWinnigStrategy());
     private GameStatus gameStatus;
+    private Player winner;
 
 
     private Game() {
-
+        //this.players=new ArrayList<>();
     }
     public void start(){
         //Assign random value to nextplayer index
@@ -41,12 +45,17 @@ public class Game {
         //update the board
         board.updateMove(move);
         //chcekWinner
-        if(checkWinner()) {
+        if(checkWinner(move.getGameSymbol())) {
             gameStatus=gameStatus.FINISHED;
+            winner=getCurrPlayerByIndex();
+            return;
         }
         //checkDrawn
         if(isDrawn()) {
-            gameStatus=gameStatus.DRAWN;
+            if(board.getEmptyCells().isEmpty()) {
+                gameStatus=gameStatus.DRAWN;
+            }
+            return;
         }
         //toggle to next player
         currPlayerIndex = (1+currPlayerIndex)%players.size();
@@ -57,8 +66,18 @@ public class Game {
     }
 
     private void validateMove(BoardCell move) {
-        if(!board.isEmpty(move.getRow(),move.getCol())) {
-            throw new InvalidMoveException(move.getRow(),move.getCol());
+        int row = move.getRow();
+        int col = move.getCol();
+
+        int rowCount = board.getCells().size();
+        int colCount = board.getCells().get(0).size();
+
+        if (row < 0 || col < 0 || row >= rowCount || col >= colCount) {
+            throw new InvalidMoveException(row,col);
+        }
+
+        if (!board.isEmpty(row, col)) {
+            throw new InvalidMoveException(row,col);
         }
     }
 
@@ -70,9 +89,18 @@ public class Game {
         return players.get(currPlayerIndex);
     }
 
-    private boolean checkWinner(){
+    private boolean checkWinner(GameSymbol symbol){
+        for(WinningStrategy currWinningStrategy:winningStrategy) {
+            boolean hasWinner = currWinningStrategy.checkWinner(board,symbol);
+            if(hasWinner) {
+                return true;
+            }
+        }
         return false;
     }
+
+
+
     private boolean checkDraw(){
         return false;
     }

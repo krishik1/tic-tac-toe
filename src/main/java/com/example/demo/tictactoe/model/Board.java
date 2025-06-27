@@ -55,4 +55,11 @@ public class Board {
             System.out.printf("\n");
         }
     }
+
+    public List<BoardCell> getEmptyCells() {
+        //Filter out the cells that !=null
+        return cells.stream().flatMap(List::stream)
+                .filter(cell->cell.getGameSymbol()==null)
+                .toList();
+    }
 }
