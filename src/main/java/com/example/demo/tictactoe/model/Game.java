@@ -23,10 +23,25 @@ public class Game {
     private List<WinningStrategy> winningStrategy=List.of(new RowWinningStrategy(),new ColWinningStrategy(),new DiagonalWinnigStrategy());
     private GameStatus gameStatus;
     private Player winner;
+    //private ArrayList<BoardCell> undoCells=new ArrayList<>();
 
 
     private Game() {
         //this.players=new ArrayList<>();
+    }
+    //undo operation
+    public void undo() {
+        BoardCell lastUpdateCell = board.getUndoCells().remove(board.getUndoCells().size() - 1); // remove the last move
+        int row = lastUpdateCell.getRow();
+        int col = lastUpdateCell.getCol();
+
+        BoardCell updatedCell = board.getCells().get(row).get(col)
+                .toBuilder()
+                .gameSymbol(null)
+                .build();
+
+        board.getCells().get(row).set(col, updatedCell);
+        currPlayerIndex = (currPlayerIndex - 1 + players.size()) % players.size();
     }
     public void start(){
         //Assign random value to nextplayer index
@@ -52,9 +67,7 @@ public class Game {
         }
         //checkDrawn
         if(isDrawn()) {
-            if(board.getEmptyCells().isEmpty()) {
-                gameStatus=gameStatus.DRAWN;
-            }
+            gameStatus=gameStatus.DRAWN;
             return;
         }
         //toggle to next player
@@ -62,7 +75,7 @@ public class Game {
     }
 
     private boolean isDrawn() {
-        return false;
+        return board.getEmptyCells().isEmpty();
     }
 
     private void validateMove(BoardCell move) {
@@ -99,11 +112,6 @@ public class Game {
         return false;
     }
 
-
-
-    private boolean checkDraw(){
-        return false;
-    }
     public static Builder builder() {
         return new Builder();
     }

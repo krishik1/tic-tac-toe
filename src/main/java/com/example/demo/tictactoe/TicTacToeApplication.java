@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class TicTacToeApplication {
     private static final int size=3;
     public static void main(String[] args) {
-
+        Scanner sc=new Scanner(System.in);
         /*SpringApplication.run(TicTacToeApplication.class, args);*/
         System.out.println("Welcome To Tic-Tac-Toe");
         /*Game Cretaion Steps*/
@@ -34,6 +34,14 @@ public class TicTacToeApplication {
             System.out.println("Curr Player Symbol : "+player.getGameSymbol());
             game.move();
             game.getBoard().printBoard();
+            System.out.println("Do you want to perform Undo operation? (Y/N)");
+            String in = sc.nextLine().trim();
+            if (in.equalsIgnoreCase("Y")) {
+                game.undo();
+                game.getBoard().printBoard();
+                continue;
+            }
+
         }
 
         if(game.getGameStatus() == GameStatus.FINISHED) {

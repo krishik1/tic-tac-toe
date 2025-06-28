@@ -8,6 +8,7 @@ import java.util.List;
 @Getter
 public class Board {
     private List<List<BoardCell>> cells=new ArrayList<>();
+    private List<BoardCell> undoCells=new ArrayList<>();
 
     public Board(int row,int col) {
         List<List<BoardCell>> rowCells = new ArrayList<>();
@@ -32,6 +33,7 @@ public class Board {
 
     public void updateMove(BoardCell move) {
         BoardCell cell = cells.get(move.getRow()).get(move.getCol());
+        undoCells.add(cell);
         //using builder obj is immutable , toBuilder offers immutability with no settr mutation by which we reuse an existing object's state
         BoardCell updatedCell = cell.toBuilder()
                 .gameSymbol(move.getGameSymbol())
