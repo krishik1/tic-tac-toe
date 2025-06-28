@@ -6,7 +6,6 @@ import lombok.Setter;
 
 @Getter
 @Builder(toBuilder = true)
-@Setter
 public class BoardCell {
     private int row;
     private int col;
